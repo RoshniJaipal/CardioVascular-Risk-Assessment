@@ -2,17 +2,16 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# ==========================================
+
 # Load Model and Files
-# ==========================================
+
 
 model = joblib.load("heart_model.pkl")
 encoders = joblib.load("encoders.pkl")
 feature_names = joblib.load("feature_names.pkl")
 
-# ==========================================
 # Streamlit Page
-# ==========================================
+
 
 st.set_page_config(
     page_title="Cardiovascular Risk Assessment",
@@ -42,9 +41,9 @@ st.write("Enter the patient's details below to predict heart disease risk.")
 
 st.markdown("---")
 
-# ==========================================
+
 # Input Fields
-# ==========================================
+
 
 col1, col2 = st.columns(2)
 
@@ -83,19 +82,19 @@ with col1:
         ["Never", "Former", "Current"]
     )
 
-    # Dataset values
+   
     alcohol = st.selectbox(
         "Alcohol Intake",
         ["Low", "Moderate", "High"]
     )
 
-    # Dataset values
+  
     physical = st.selectbox(
         "Physical Activity",
         ["Sedentary", "Moderate", "Active"]
     )
 
-    # Dataset values
+    
     diet = st.selectbox(
         "Diet",
         ["Healthy", "Average", "Unhealthy"]
@@ -170,27 +169,26 @@ with col2:
         180
     )
 
-# ==========================================
+
 # Prediction
-# ==========================================
+
 
 if st.button("🔍 Predict Risk"):
 
-    # Encode only categorical columns
     gender = encoders["Gender"].transform([gender])[0]
     smoking = encoders["Smoking"].transform([smoking])[0]
     alcohol = encoders["Alcohol_Intake"].transform([alcohol])[0]
     physical = encoders["Physical_Activity"].transform([physical])[0]
     diet = encoders["Diet"].transform([diet])[0]
 
-    # Convert Yes/No to numeric
+   
     hypertension = 1 if hypertension == "Yes" else 0
     diabetes = 1 if diabetes == "Yes" else 0
     hyperlipidemia = 1 if hyperlipidemia == "Yes" else 0
     family = 1 if family == "Yes" else 0
     previous = 1 if previous == "Yes" else 0
 
-    # Create input dataframe
+
     input_data = pd.DataFrame([{
         "Age": age,
         "Gender": gender,
@@ -214,16 +212,16 @@ if st.button("🔍 Predict Risk"):
         "Cholesterol_Total": cholesterol
     }])
 
-    # Match training column order
+   
     input_data = input_data[feature_names]
 
-    # Make prediction
+    
     prediction = model.predict(input_data)[0]
     st.subheader("📋 Patient Details")
     st.write(input_data)
     probability = model.predict_proba(input_data)[0]
 
-    # Risk percentage
+   
     risk = probability[1] * 100
 
     st.markdown("---")
